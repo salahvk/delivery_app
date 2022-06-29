@@ -1,15 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_shopping/screens/homepage.dart';
-import 'package:flutter_application_shopping/screens/loginScreen.dart';
+import 'package:flutter_application_shopping/screens/home.dart';
+import 'package:flutter_application_shopping/screens/place_menu.dart';
+import 'package:flutter_application_shopping/screens/sign_in.dart';
 import 'package:flutter_application_shopping/screens/splash_screen.dart';
 
-import '../screens/signup.dart';
+import '../screens/sign_up.dart';
 
 class Routes {
   static const String splashRoute = '/';
+  static const String homeRoute = '/home';
   static const String loginRoute = '/login';
   static const String signUpRoute = '/SignUp';
-  static const String home = '/Home';
+  static const String placeMenu = '/PlaceMenu';
 }
 
 class RouteGenerator {
@@ -17,12 +19,14 @@ class RouteGenerator {
     switch (routeSettings.name) {
       case Routes.splashRoute:
         return MaterialPageRoute(builder: (_) => const Splash());
+      case Routes.homeRoute:
+        return MaterialPageRoute(builder: (_) => const Home());
       case Routes.loginRoute:
         return MaterialPageRoute(builder: (_) => const LoginPage());
       case Routes.signUpRoute:
         return MaterialPageRoute(builder: (_) => const SignUpPage());
-      case Routes.home:
-        return MaterialPageRoute(builder: (_) => const Home());
+      case Routes.placeMenu:
+        return MaterialPageRoute(builder: (_) => const PlaceMenu());
 
       default:
         return unDefinedRoute();

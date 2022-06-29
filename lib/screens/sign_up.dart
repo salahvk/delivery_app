@@ -16,14 +16,22 @@ class _SignUpPageState extends State<SignUpPage> {
   TextEditingController emailcontroller = TextEditingController();
   TextEditingController passcontroller = TextEditingController();
   var focusNode = FocusNode();
-  var unusedFocusNode = FocusNode();
+  bool isPasswordVisible = false;
+  String email = "";
+  String password = "";
+  bool loading = false;
+  final snackBar = const SnackBar(
+    content: Text('Account Created!'),
+  );
   @override
   Widget build(BuildContext context) {
-    bool isPasswordVisible = true;
-    String email = "";
-    String password = "";
-    bool loading = false;
     Size size = MediaQuery.of(context).size;
+
+    void setPsswordVisibility() {
+      setState(() {
+        isPasswordVisible = !isPasswordVisible;
+      });
+    }
 
     return Scaffold(
       body: SafeArea(
@@ -58,7 +66,7 @@ class _SignUpPageState extends State<SignUpPage> {
                     fontWeight: FontWeight.w600,
                     fontSize: size.height / 54),
                 decoration: searchBoxDecoration.copyWith(
-                  hintText: "Username",
+                  hintText: "Email",
                 ),
                 cursorColor: readRowTextColor,
               ),
@@ -72,27 +80,7 @@ class _SignUpPageState extends State<SignUpPage> {
                 autofocus: false,
                 obscureText: isPasswordVisible,
                 controller: passcontroller,
-                onSubmitted: (value) {
-                  if (email.isEmpty) {
-                    Fluttertoast.showToast(
-                        msg: "Enter Username",
-                        textColor: Colors.white,
-                        backgroundColor: Colors.grey,
-                        gravity: ToastGravity.CENTER);
-                    // _scaffoldKey.currentState.showSnackBar(new SnackBar(content: new Text("Enter Username")));
-                  } else if (password.isEmpty) {
-                    Fluttertoast.showToast(
-                        msg: "Enter Password",
-                        textColor: Colors.white,
-                        backgroundColor: Colors.grey,
-                        gravity: ToastGravity.CENTER);
-                    // _scaffoldKey.currentState.showSnackBar(new SnackBar(content: new Text("Enter Password")));
-                  } else {
-                    setState(() {
-                      loading = true;
-                    });
-                  }
-                },
+                onSubmitted: (value) {},
                 onChanged: (value) {
                   setState(() {
                     password = value;
@@ -106,13 +94,13 @@ class _SignUpPageState extends State<SignUpPage> {
                 decoration: searchBoxDecoration.copyWith(
                   hintText: "Password",
                   suffixIcon: IconButton(
-                      icon: Icon(!isPasswordVisible
-                          ? Icons.visibility_outlined
-                          : Icons.visibility_off_outlined),
+                      icon: Icon(
+                        isPasswordVisible
+                            ? Icons.visibility
+                            : Icons.visibility_off,
+                      ),
                       onPressed: () {
-                        setState(() {
-                          isPasswordVisible = !isPasswordVisible;
-                        });
+                        setPsswordVisibility();
                       }),
                 ),
                 cursorColor: readRowTextColor,
@@ -124,9 +112,8 @@ class _SignUpPageState extends State<SignUpPage> {
             GestureDetector(
               onTap: () {
                 print('tappp');
-                print(emailcontroller.text);
-                signup();
-                print(signup());
+
+                onsubmitted();
               },
               child: Container(
                 margin: EdgeInsets.only(top: size.height / 25),
@@ -179,15 +166,49 @@ class _SignUpPageState extends State<SignUpPage> {
     );
   }
 
-  Future<bool> signup() async {
-    try {
-      await FirebaseAuth.instance.createUserWithEmailAndPassword(
-          email: emailcontroller.text, password: passcontroller.text);
-      Navigator.pushReplacementNamed(context, Routes.home);
-      return true;
-    } on FirebaseAuthException catch (e) {
-      print(e);
-      return false;
+  Future onsubmitted() async {
+    email = emailcontroller.text;
+    password = passcontroller.text;
+    print(email);
+    bool emailValid = RegExp(
+            r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
+        .hasMatch(email);
+    print('$emailValid emailValid');
+
+    if (email.isEmpty || email.length < 4 || emailValid != true) {
+      Fluttertoast.showToast(
+          msg: "Enter a valid Email",
+          textColor: Colors.white,
+          backgroundColor: Colors.grey,
+          gravity: ToastGravity.CENTER);
+    } else if (password.isEmpty || password.length < 6) {
+      Fluttertoast.showToast(
+          msg: "Password must be 6 Characters",
+          textColor: Colors.white,
+          backgroundColor: Colors.grey,
+          gravity: ToastGravity.CENTER);
+    } else {
+      setState(() {
+        loading = true;
+      });
+      try {
+        await FirebaseAuth.instance.createUserWithEmailAndPassword(
+            email: emailcontroller.text, password: passcontroller.text);
+        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+        print('successsssssssss');
+        Navigator.pushReplacementNamed(context, Routes.loginRoute);
+        loading = false;
+      } on FirebaseAuthException catch (e) {
+        setState(() {
+          loading = false;
+        });
+        Fluttertoast.showToast(
+            msg: "SomeThing Wrong",
+            textColor: Colors.white,
+            backgroundColor: Colors.grey,
+            gravity: ToastGravity.CENTER);
+        print(e);
+      }
     }
   }
 }
