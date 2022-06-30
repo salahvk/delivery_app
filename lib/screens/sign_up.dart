@@ -78,7 +78,7 @@ class _SignUpPageState extends State<SignUpPage> {
               child: TextField(
                 focusNode: focusNode,
                 autofocus: false,
-                obscureText: isPasswordVisible,
+                obscureText: !isPasswordVisible,
                 controller: passcontroller,
                 onSubmitted: (value) {},
                 onChanged: (value) {
@@ -96,8 +96,8 @@ class _SignUpPageState extends State<SignUpPage> {
                   suffixIcon: IconButton(
                       icon: Icon(
                         isPasswordVisible
-                            ? Icons.visibility
-                            : Icons.visibility_off,
+                            ? Icons.visibility_off
+                            : Icons.visibility,
                       ),
                       onPressed: () {
                         setPsswordVisibility();
@@ -167,8 +167,8 @@ class _SignUpPageState extends State<SignUpPage> {
   }
 
   Future onsubmitted() async {
-    email = emailcontroller.text;
-    password = passcontroller.text;
+    email = emailcontroller.text.trim();
+    password = passcontroller.text.trim();
     print(email);
     bool emailValid = RegExp(
             r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
@@ -202,12 +202,20 @@ class _SignUpPageState extends State<SignUpPage> {
         setState(() {
           loading = false;
         });
-        Fluttertoast.showToast(
-            msg: "SomeThing Wrong",
-            textColor: Colors.white,
-            backgroundColor: Colors.grey,
-            gravity: ToastGravity.CENTER);
-        print(e);
+        print(e.code);
+        if (e.code == 'email-already-in-use') {
+          Fluttertoast.showToast(
+              msg: "The email address is already in use by another account",
+              textColor: Colors.white,
+              backgroundColor: Colors.grey,
+              gravity: ToastGravity.CENTER);
+        }
+        // Fluttertoast.showToast(
+        //     msg: "SomeThing Wrong",
+        //     textColor: Colors.white,
+        //     backgroundColor: Colors.grey,
+        //     gravity: ToastGravity.CENTER);
+        print(e.message);
       }
     }
   }

@@ -18,7 +18,7 @@ class _SplashState extends State<Splash> {
   }
 
   _goNextPage() async {
-    Navigator.pushReplacementNamed(context, Routes.loginRoute);
+    Navigator.pushReplacementNamed(context, Routes.homeRoute);
   }
 
   @override

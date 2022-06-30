@@ -1,5 +1,5 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_application_shopping/components/routes_manager.dart';
 
 class PlaceMenu extends StatefulWidget {
   const PlaceMenu({Key? key}) : super(key: key);
@@ -11,10 +11,36 @@ class PlaceMenu extends StatefulWidget {
 class _HomeState extends State<PlaceMenu> {
   @override
   Widget build(BuildContext context) {
-    final user = FirebaseAuth.instance.currentUser!;
     return Scaffold(
-        body: Center(
-      child: Text('${user.email}Entered'),
-    ));
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {},
+          child: const Icon(Icons.add),
+        ),
+        body: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.all(10.0),
+            child: Column(
+              children: [
+                // Text('${user.email}Entered'),
+                // ElevatedButton(
+                //     onPressed: () {
+                //       FirebaseAuth.instance.signOut();
+                //       Navigator.pushReplacementNamed(context, Routes.homeRoute);
+                //     },
+                //     child: const Text('Log out'))
+                Container(
+                  height: 50,
+                  color: Colors.red,
+                ),
+                const Spacer(),
+                ElevatedButton(
+                    onPressed: () {
+                      Navigator.pushReplacementNamed(context, Routes.data);
+                    },
+                    child: const Text('Next page'))
+              ],
+            ),
+          ),
+        ));
   }
 }

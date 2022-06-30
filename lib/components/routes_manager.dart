@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_shopping/screens/data.dart';
+import 'package:flutter_application_shopping/screens/data_entry.dart';
 import 'package:flutter_application_shopping/screens/home.dart';
 import 'package:flutter_application_shopping/screens/place_menu.dart';
 import 'package:flutter_application_shopping/screens/sign_in.dart';
@@ -12,6 +14,8 @@ class Routes {
   static const String loginRoute = '/login';
   static const String signUpRoute = '/SignUp';
   static const String placeMenu = '/PlaceMenu';
+  static const String data = '/data';
+  static const String dataEntry = '/dataEntry';
 }
 
 class RouteGenerator {
@@ -27,7 +31,10 @@ class RouteGenerator {
         return MaterialPageRoute(builder: (_) => const SignUpPage());
       case Routes.placeMenu:
         return MaterialPageRoute(builder: (_) => const PlaceMenu());
-
+      case Routes.data:
+        return MaterialPageRoute(builder: (_) => const Data());
+      case Routes.dataEntry:
+        return MaterialPageRoute(builder: (_) => const DataEntry());
       default:
         return unDefinedRoute();
     }

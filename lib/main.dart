@@ -1,6 +1,5 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_application_shopping/screens/sign_in.dart';
 
 import 'components/routes_manager.dart';
 
@@ -22,7 +21,6 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const LoginPage(),
       onGenerateRoute: RouteGenerator.getRoute,
       initialRoute: Routes.splashRoute,
     );

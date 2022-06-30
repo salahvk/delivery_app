@@ -16,7 +16,7 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   TextEditingController emailcontroller = TextEditingController();
   TextEditingController passcontroller = TextEditingController();
-  bool _isPasswordVisible = true;
+  bool _isPasswordVisible = false;
   String email = "";
   String password = "";
   bool loading = false;
@@ -74,7 +74,7 @@ class _LoginPageState extends State<LoginPage> {
               width: size.width / 1.2,
               child: TextField(
                 focusNode: focusNode,
-                obscureText: _isPasswordVisible,
+                obscureText: !_isPasswordVisible,
                 controller: passcontroller,
                 onChanged: (value) {
                   setState(() {
@@ -164,8 +164,8 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Future onsubmitted() async {
-    email = emailcontroller.text;
-    password = passcontroller.text;
+    email = emailcontroller.text.trim();
+    password = passcontroller.text.trim();
     print(email);
     bool emailValid = RegExp(
             r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
@@ -192,7 +192,7 @@ class _LoginPageState extends State<LoginPage> {
         await FirebaseAuth.instance.signInWithEmailAndPassword(
             email: emailcontroller.text, password: passcontroller.text);
         print('Sign in');
-        Navigator.pushReplacementNamed(context, Routes.placeMenu);
+        Navigator.pushReplacementNamed(context, Routes.data);
       } on FirebaseAuthException catch (e) {
         print(e.code);
         print(e.message);
@@ -209,6 +209,12 @@ class _LoginPageState extends State<LoginPage> {
         } else if (e.code == 'user-not-found') {
           Fluttertoast.showToast(
               msg: "There is no user in this name",
+              textColor: Colors.white,
+              backgroundColor: Colors.grey,
+              gravity: ToastGravity.CENTER);
+        } else if (e.code == 'too-many-requests') {
+          Fluttertoast.showToast(
+              msg: "Too many requests.Try again later",
               textColor: Colors.white,
               backgroundColor: Colors.grey,
               gravity: ToastGravity.CENTER);
