@@ -73,7 +73,9 @@ class Data extends StatelessWidget {
               SizedBox(
                 child: Text(user.to),
               ),
-              SizedBox(
+              Container(
+                decoration:
+                    BoxDecoration(border: Border.all(color: Colors.black)),
                 child: Text(user.status),
               )
             ],

@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_shopping/components/routes_manager.dart';
 import 'package:flutter_application_shopping/constants/colors.dart';
@@ -26,6 +27,9 @@ class _LoginPageState extends State<DataEntry> {
   bool loading = false;
   var focusNode = FocusNode();
   DateTime selectedDate = DateTime.now();
+  List<String> statusList = ['Pending', 'Delivered', 'Not Delivered'];
+  String? selectedStatus;
+  String hint = 'Select item';
 
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
@@ -129,22 +133,45 @@ class _LoginPageState extends State<DataEntry> {
                   margin: EdgeInsets.only(top: size.height / 20),
                   height: size.height / 17,
                   width: size.width / 1.2,
-                  child: TextField(
-                    keyboardType: TextInputType.emailAddress,
-                    controller: statuscontroller,
-                    onSubmitted: (value) {
-                      FocusScope.of(context).requestFocus(focusNode);
-                    },
-                    onChanged: (value) {},
-                    style: TextStyle(
-                        color: readRowTextColor,
-                        fontFamily: "Open",
-                        fontWeight: FontWeight.w600,
-                        fontSize: size.height / 54),
-                    decoration: searchBoxDecoration.copyWith(
-                      hintText: "Status",
+                  decoration: BoxDecoration(
+                    border: Border.all(color: readRowTextColor),
+                    borderRadius: BorderRadius.circular(15),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(15, 5, 0, 5),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(
+                          child: DropdownButtonHideUnderline(
+                            child: DropdownButton2<String>(
+                              value: selectedStatus,
+                              dropdownMaxHeight: size.height * .3,
+                              isExpanded: true,
+                              hint: Text(hint),
+                              disabledHint: Text(hint),
+                              items: statusList
+                                  .map(
+                                    (e) => DropdownMenuItem<String>(
+                                      value: e,
+                                      child: Text(e),
+                                    ),
+                                  )
+                                  .toList(),
+                              onChanged: (v) {
+                                setState(() {
+                                  if (v != null) {
+                                    selectedStatus = v;
+                                  } else {
+                                    selectedStatus = hint;
+                                  }
+                                });
+                              },
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
-                    cursorColor: readRowTextColor,
                   ),
                 ),
                 Container(
@@ -199,7 +226,7 @@ class _LoginPageState extends State<DataEntry> {
   Future onSubmitted() async {
     from = fromcontroller.text;
     to = tocontroller.text;
-    status = statuscontroller.text;
+    status = selectedStatus!;
 
     final docUser = FirebaseFirestore.instance.collection('users data').doc();
     final user = Users(

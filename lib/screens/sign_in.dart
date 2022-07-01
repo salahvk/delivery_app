@@ -110,6 +110,7 @@ class _LoginPageState extends State<LoginPage> {
             ),
             GestureDetector(
               onTap: () {
+                FocusManager.instance.primaryFocus?.unfocus();
                 onsubmitted();
               },
               child: Container(
@@ -215,6 +216,18 @@ class _LoginPageState extends State<LoginPage> {
         } else if (e.code == 'too-many-requests') {
           Fluttertoast.showToast(
               msg: "Too many requests.Try again later",
+              textColor: Colors.white,
+              backgroundColor: Colors.grey,
+              gravity: ToastGravity.CENTER);
+        } else if (e.code == 'network-request-failed') {
+          Fluttertoast.showToast(
+              msg: "interrupted connection ! Please check your network",
+              textColor: Colors.white,
+              backgroundColor: Colors.grey,
+              gravity: ToastGravity.CENTER);
+        } else if (e.code == 'unknown') {
+          Fluttertoast.showToast(
+              msg: "Please check your connection",
               textColor: Colors.white,
               backgroundColor: Colors.grey,
               gravity: ToastGravity.CENTER);
