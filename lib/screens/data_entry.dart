@@ -1,10 +1,15 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_application_shopping/components/routes_manager.dart';
 import 'package:flutter_application_shopping/constants/colors.dart';
 import 'package:flutter_application_shopping/constants/textfieldDecoration.dart';
 import 'package:flutter_application_shopping/model/model.dart';
+import 'package:flutter_application_shopping/utilis/snackbar.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:internet_connection_checker/internet_connection_checker.dart';
+import 'package:intl/intl.dart';
 
 class DataEntry extends StatefulWidget {
   const DataEntry({Key? key}) : super(key: key);
@@ -17,19 +22,23 @@ class _LoginPageState extends State<DataEntry> {
   TextEditingController statuscontroller = TextEditingController();
   TextEditingController tocontroller = TextEditingController();
   TextEditingController fromcontroller = TextEditingController();
-  final snackBar = const SnackBar(
-    content: Text('Data entered!'),
-  );
   String from = "";
   String to = "";
   String status = "";
   String date = "";
+
   bool loading = false;
+
   var focusNode = FocusNode();
+
   DateTime selectedDate = DateTime.now();
   List<String> statusList = ['Pending', 'Delivered', 'Not Delivered'];
-  String? selectedStatus;
+  String? selectedStatus = '';
   String hint = 'Select item';
+
+  String formattedDate = '';
+
+  bool hasInternet = false;
 
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
@@ -45,9 +54,17 @@ class _LoginPageState extends State<DataEntry> {
   }
 
   @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    selectedStatus = 'Pending';
+  }
+
+  @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
-    date = "${selectedDate.toLocal()}".split(' ')[0];
+    var formatter = DateFormat('dd-MM-yyyy');
+    formattedDate = formatter.format(selectedDate);
 
     return Scaffold(
       body: SafeArea(
@@ -82,7 +99,7 @@ class _LoginPageState extends State<DataEntry> {
                         borderRadius: BorderRadius.circular(10),
                         color: const Color.fromARGB(255, 233, 220, 220),
                         border: Border.all(color: Colors.black)),
-                    child: Center(child: Text(date)),
+                    child: Center(child: Text(formattedDate)),
                   ),
                   onTap: () {
                     _selectDate(context);
@@ -182,11 +199,31 @@ class _LoginPageState extends State<DataEntry> {
                   ),
                 ),
                 GestureDetector(
-                  onTap: () {
+                  onTap: () async {
                     setState(() {
                       loading = true;
                     });
-                    onSubmitted();
+                    FocusManager.instance.primaryFocus?.unfocus();
+                    hasInternet =
+                        await InternetConnectionChecker().hasConnection;
+                    if (hasInternet == false) {
+                      setState(() {
+                        loading = false;
+                      });
+                      // ignore: use_build_context_synchronously
+                      showSnackBar("No connection!", context,
+                          icon: Icons
+                              .signal_cellular_connected_no_internet_0_bar_sharp,
+                          color: Colors.red);
+                    }
+
+                    hasInternet
+                        ? onSubmitted()
+                        // ignore: use_build_context_synchronously
+                        : showSnackBar("No connection!", context,
+                            icon: Icons
+                                .signal_cellular_connected_no_internet_0_bar_sharp,
+                            color: Colors.red);
                   },
                   child: Container(
                     margin: EdgeInsets.only(top: size.height / 25),
@@ -228,17 +265,41 @@ class _LoginPageState extends State<DataEntry> {
     to = tocontroller.text;
     status = selectedStatus!;
 
-    final docUser = FirebaseFirestore.instance.collection('users data').doc();
-    final user = Users(
-        id: docUser.id, userDate: date, from: from, to: to, status: status);
+    if (from.isEmpty || to.isEmpty || status.isEmpty) {
+      setState(() {
+        loading = false;
+      });
+      Fluttertoast.showToast(
+          msg: "Complete the required fields",
+          textColor: Colors.white,
+          backgroundColor: Colors.grey,
+          gravity: ToastGravity.CENTER);
+      return;
+    } else {
+      final docUser = FirebaseFirestore.instance.collection('users data').doc();
+      final user = Users(
+          id: docUser.id,
+          userDate: formattedDate,
+          from: from,
+          to: to,
+          status: status);
 
-    final json = user.tojson();
-    await docUser.set(json);
-    print('success');
-    ScaffoldMessenger.of(context).showSnackBar(snackBar);
-    setState(() {
-      loading = false;
-    });
-    Navigator.pushReplacementNamed(context, Routes.data);
+      final json = user.tojson();
+
+      try {
+        await docUser.set(json);
+
+        // ignore: use_build_context_synchronously
+        showSnackBar("Data entered!", context,
+            icon: Icons.data_saver_on_rounded);
+        setState(() {
+          loading = false;
+        });
+        // ignore: use_build_context_synchronously
+        Navigator.pushReplacementNamed(context, Routes.data);
+      } on Exception {
+        print('object');
+      }
+    }
   }
 }
