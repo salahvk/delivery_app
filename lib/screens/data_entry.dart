@@ -62,7 +62,8 @@ class _LoginPageState extends State<DataEntry> {
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
-    var formatter = DateFormat('dd-MM-yyyy');
+    var formatter = DateFormat('dd-MM');
+    //-yyyy
     formattedDate = formatter.format(selectedDate);
 
     return Scaffold(
