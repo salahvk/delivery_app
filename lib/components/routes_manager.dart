@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_application_shopping/screens/data.dart';
 import 'package:flutter_application_shopping/screens/data_entry.dart';
 import 'package:flutter_application_shopping/screens/home.dart';
-import 'package:flutter_application_shopping/screens/place_menu.dart';
 import 'package:flutter_application_shopping/screens/sign_in.dart';
 import 'package:flutter_application_shopping/screens/splash_screen.dart';
 
@@ -29,8 +28,8 @@ class RouteGenerator {
         return MaterialPageRoute(builder: (_) => const LoginPage());
       case Routes.signUpRoute:
         return MaterialPageRoute(builder: (_) => const SignUpPage());
-      case Routes.placeMenu:
-        return MaterialPageRoute(builder: (_) => const PlaceMenu());
+      // case Routes.placeMenu:
+      //   return MaterialPageRoute(builder: (_) => const PlaceMenu());
       case Routes.data:
         return MaterialPageRoute(builder: (_) => const Data());
       case Routes.dataEntry:

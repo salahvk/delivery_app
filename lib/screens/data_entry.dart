@@ -2,7 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_application_shopping/components/routes_manager.dart';
 import 'package:flutter_application_shopping/constants/colors.dart';
 import 'package:flutter_application_shopping/constants/textfieldDecoration.dart';
 import 'package:flutter_application_shopping/model/model.dart';
@@ -296,7 +295,7 @@ class _LoginPageState extends State<DataEntry> {
           loading = false;
         });
         // ignore: use_build_context_synchronously
-        Navigator.pushReplacementNamed(context, Routes.data);
+        Navigator.pop(context);
       } on Exception {
         print('object');
       }
